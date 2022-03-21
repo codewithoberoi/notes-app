@@ -1,19 +1,11 @@
 const fs = require('fs')
 const chalk = require('chalk')
 
-const getNotes = () => {
-    return 'Your notes..'
-}
-
 const addNote = (title, body) => {
     const notes = loadNotes();
-    const duplicateNotes = notes.filter((note) => note.title === title)
-    // const duplicateNotes = notes.filter(
-    //     function (note) {
-    //         return note.title === title
-    //     }
-    // )
-    if (duplicateNotes.length === 0) {
+    //Stop once find 1st match.
+    const duplicateNote = notes.find((note) => note.title === title)
+    if (!duplicateNote) {
         notes.push({
             title: title,
             body: body
@@ -25,21 +17,10 @@ const addNote = (title, body) => {
     }
 }
 
-/**
- * Load existing notes.
- * Use .filter method to remove note(if any). Array of notes to keep
- * Save newly created array.
- */
-
 const removeNotes = (title) => {
     const notes = loadNotes()
     //Array of notes to keep. return true if want to keep, return false if not.
     notesToKeep = notes.filter((note) => note.title !== title)
-    // notesToKeep = notes.filter(
-    //     function(note) {
-    //         return note.title !== title
-    //     }
-    // )
     if (notes.length === notesToKeep.length) {
         console.log(chalk.red('No note found!'))
     } else {
@@ -63,13 +44,29 @@ const saveNotes = (notes) => {
     fs.writeFileSync('notes.json', dataJson);
 }
 
-module.exports = {
-    getNotes: getNotes,
-    addNote: addNote,
-    removeNotes: removeNotes
+const listNotes = () => {
+    const notes = loadNotes();
+    console.log(chalk.dim('Listing all the current notes...'))
+    notes.forEach((note) => {
+        console.log(chalk.green.bold(note.title) + ',' + chalk.blue.bold(note.body))
+    })
 }
 
-/** Refactor all functions
- * If function is method, use ES6 method defination.
- * Otherwise, use most concise arrow function possible.
- */
+const readNotes = (title) => {
+    const notes = loadNotes();
+    const searchTitle = notes.find((note) => note.title === title)
+    if(searchTitle) {
+        console.log('PFB details of the asked title.')
+        console.log(chalk.green.inverse(searchTitle.title))
+        console.log(chalk.green(searchTitle.body))
+    } else {
+        console.log(chalk.red('Note with shared title ') + chalk.red.inverse(title) + chalk.red(' not found'))
+    }
+}
+
+module.exports = {
+    addNote: addNote,
+    removeNotes: removeNotes,
+    listNotes: listNotes,
+    readNotes: readNotes
+}
