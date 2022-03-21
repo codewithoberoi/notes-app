@@ -18,17 +18,10 @@ yargs.command({
             type: 'string'
         }
     },
-    handler: function(argv) {
+    handler(argv) {
         notesutil.addNote(argv.title, argv.body)
     }
 })
-
-/**
- * Setup the remove command to take required --title option
- * Create and export a removeNote function from notes.js
- * Call remobeNote in remove command handler
- * Have removeNote log the title of the note to be removed
- */
 
 yargs.command({
     command: 'remove',
@@ -40,14 +33,32 @@ yargs.command({
             type: 'string'
         }
     },
-    handler: function(argv) {
+    handler(argv) {
         notesutil.removeNotes(argv.title)
     }
 })
 
-yargs.parse();
+yargs.command({
+    command: 'list',
+    describe: 'List all notes.',
+    handler() {
+        notesutil.listNotes()
+    }
+})
 
-/** Refactor all functions
- * If function is method, use ES6 method defination.
- * Otherwise, use most concise arrow function possible.
- */
+yargs.command({
+    command: 'read',
+    describe: 'Read a note.',
+    builder: {
+        title: {
+            describe: 'Title of a note',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler(argv) {
+        notesutil.readNotes(argv.title)
+    }
+})
+
+yargs.parse();
